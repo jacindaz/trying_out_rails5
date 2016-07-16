@@ -2,7 +2,11 @@ class CommentsController < ApplicationController
   before_action :set_post
 
   def create
-    @post.comments.create!(comments_params)
+    comment = @post.comments.create!(comments_params)
+
+    # deliver_later will trigger job framework to send asynchronously
+    CommentsMailer.submitted(comment).deliver_later
+
     redirect_to @post
   end
 
